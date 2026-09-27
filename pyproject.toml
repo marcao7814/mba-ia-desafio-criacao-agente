@@ -8,11 +8,14 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "aiosqlite>=0.22.1",
     "google-adk>=2.2.0,<3",
+    "python-dotenv>=1.2.3",
 ]
 
 [project.scripts]
 aurora-assistente = "aurora_assistente:main"
+restaurar-dados = "aurora_assistente.scripts.restaurar_dados:main"
 
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
