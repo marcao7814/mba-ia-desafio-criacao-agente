@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -9,6 +11,26 @@ class CriarSessaoRequest(BaseModel):
 
 class CriarSessaoResponse(BaseModel):
     session_id: str
+
+
+class EnviarMensagemRequest(BaseModel):
+    texto: str
+
+
+class ResponderConfirmacaoRequest(BaseModel):
+    id: str
+    confirmado: bool
+
+
+class ConfirmacaoPendente(BaseModel):
+    id: str
+    acao: str | None
+    detalhes: dict[str, Any]
+
+
+class RespostaConversa(BaseModel):
+    resposta: str
+    confirmacoes_pendentes: list[ConfirmacaoPendente]
 
 
 class ReservaVerificacao(BaseModel):

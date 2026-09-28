@@ -18,3 +18,5 @@ if not _database_url.startswith(_SQLITE_PREFIX):
 DATABASE_PATH = (PROJECT_ROOT / _database_url[len(_SQLITE_PREFIX) :]).resolve()
 
 PORT = int(os.getenv("PORT", "8000"))
+
+MODEL_NAME = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
