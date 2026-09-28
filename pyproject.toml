@@ -15,7 +15,6 @@ dependencies = [
 ]
 
 [project.scripts]
-aurora-assistente = "aurora_assistente:main"
 restaurar-dados = "aurora_assistente.scripts.restaurar_dados:main"
 subir-api = "aurora_assistente.api.main:executar"
 
