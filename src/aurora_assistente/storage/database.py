@@ -23,6 +23,14 @@ CREATE TABLE IF NOT EXISTS visitantes (
     nome TEXT NOT NULL,
     data TEXT NOT NULL
 );
+
+-- Mapeia session_id (chave nas rotas HTTP) para o apartamento que criou a
+-- sessao. E so um indice de apoio: quem as tools/agentes usam de verdade e
+-- o state da sessao do ADK, gravado uma unica vez em POST /sessoes.
+CREATE TABLE IF NOT EXISTS sessoes (
+    session_id TEXT PRIMARY KEY,
+    apartamento TEXT NOT NULL
+);
 """
 
 
