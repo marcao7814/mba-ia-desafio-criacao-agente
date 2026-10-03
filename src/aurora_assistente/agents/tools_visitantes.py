@@ -3,6 +3,7 @@ from __future__ import annotations
 from google.adk.tools import ToolContext
 
 from aurora_assistente.storage import database
+from aurora_assistente.storage.referencia import data_valida
 from aurora_assistente.storage.visitantes import listar_visitantes
 
 
@@ -14,6 +15,8 @@ async def autorizar_visitante(nome: str, data: str, tool_context: ToolContext) -
     confirmacao real so acontece pela rota de confirmacoes.
     """
     apartamento = tool_context.state["apartamento"]
+    if not data_valida(data):
+        return {"erro": f"Data '{data}' invalida. Use o formato AAAA-MM-DD (ex.: 2030-04-20)."}
     async with database.connect() as conn:
         await conn.execute(
             "INSERT INTO visitantes (apartamento, nome, data) VALUES (?, ?, ?)",

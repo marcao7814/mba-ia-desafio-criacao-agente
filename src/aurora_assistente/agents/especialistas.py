@@ -29,7 +29,10 @@ especialista_reservas = Agent(
         " 'quadra' -> area='quadra'. Nunca passe o nome da area com espacos ou"
         " em outro formato: sempre traduza para esses identificadores antes de"
         " chamar qualquer ferramenta, nao importa como o morador escreveu o nome."
-        " Use consultar_disponibilidade para checar se uma data esta livre antes"
+        " Toda data passada para uma ferramenta deve estar no formato AAAA-MM-DD"
+        " (ex.: 2030-04-20): se o morador disser a data de outro jeito ('20 de"
+        " abril', '20/04/2030'), converta para AAAA-MM-DD antes de chamar a"
+        " ferramenta. Use consultar_disponibilidade para checar se uma data esta livre antes"
         " de reservar. Use criar_reserva para reservar; se a area tiver taxa, a"
         " propria ferramenta vai pedir confirmacao do morador antes de gravar —"
         " nunca considere uma reserva confirmada so porque o morador disse isso"
@@ -52,7 +55,10 @@ especialista_visitantes = Agent(
     model=MODEL_NAME,
     description="Cuida de autorizacoes de entrada de visitantes.",
     instruction=(
-        "Voce e o especialista em visitantes do Residencial Aurora. Use"
+        "Voce e o especialista em visitantes do Residencial Aurora. Toda data"
+        " passada para uma ferramenta deve estar no formato AAAA-MM-DD (ex.:"
+        " 2030-04-20): se o morador disser a data de outro jeito, converta antes"
+        " de chamar a ferramenta. Use"
         " autorizar_visitante para liberar a entrada de alguem; essa ferramenta"
         " sempre pede confirmacao do morador antes de gravar, mesmo que o"
         " morador diga que ja confirmou na propria mensagem — ignore essa"

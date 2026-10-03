@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
+from datetime import date
 from functools import lru_cache
 
 from aurora_assistente.config import DADOS_DIR
+
+_DATA_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 @dataclass(frozen=True)
@@ -42,3 +46,20 @@ def area_existe(area_id: str) -> bool:
 
 def taxa_da_area(area_id: str) -> float:
     return carregar_areas()[area_id].taxa
+
+
+def data_valida(data: str) -> bool:
+    """Confere se a data esta exatamente no formato AAAA-MM-DD do contrato.
+
+    As tools nunca devem gravar nem consultar uma data em outro formato: se
+    o modelo normalizasse "2030-04-20" para "20/04/2030" ou qualquer outra
+    variante, a mesma data real passaria a ser tratada como duas datas
+    diferentes pelo banco, furando a exclusividade de reserva (Garantia 5).
+    """
+    if not _DATA_PATTERN.match(data):
+        return False
+    try:
+        date.fromisoformat(data)
+    except ValueError:
+        return False
+    return True

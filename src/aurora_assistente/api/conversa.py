@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from fastapi import HTTPException
 from google.genai import types
+from google.genai.errors import APIError
 
 from aurora_assistente.api.deps import APP_NAME, get_runner, get_session_service
 
@@ -15,13 +17,18 @@ async def executar_turno(*, session_id: str, apartamento: str, new_message: type
     """
     runner = get_runner()
     resposta = ""
-    async for evento in runner.run_async(
-        user_id=apartamento, session_id=session_id, new_message=new_message
-    ):
-        if evento.is_final_response() and evento.content and evento.content.parts:
-            texto = "".join(parte.text or "" for parte in evento.content.parts)
-            if texto:
-                resposta = texto
+    try:
+        async for evento in runner.run_async(
+            user_id=apartamento, session_id=session_id, new_message=new_message
+        ):
+            if evento.is_final_response() and evento.content and evento.content.parts:
+                texto = "".join(parte.text or "" for parte in evento.content.parts)
+                if texto:
+                    resposta = texto
+    except APIError as erro:
+        raise HTTPException(
+            status_code=503, detail="Servico de IA temporariamente indisponivel. Tente novamente."
+        ) from erro
     return resposta
 
 
