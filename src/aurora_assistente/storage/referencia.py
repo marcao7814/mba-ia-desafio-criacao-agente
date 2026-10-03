@@ -63,3 +63,8 @@ def data_valida(data: str) -> bool:
     except ValueError:
         return False
     return True
+
+
+def erro_data_invalida(data: str) -> dict:
+    """Mensagem de erro padrao devolvida por toda tool quando data_valida(data) e False."""
+    return {"erro": f"Data '{data}' invalida. Use o formato AAAA-MM-DD (ex.: 2030-04-20)."}

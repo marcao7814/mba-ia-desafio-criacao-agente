@@ -23,6 +23,16 @@ from aurora_assistente.storage.sessoes import apartamento_da_sessao, registrar_s
 router = APIRouter(prefix="/sessoes", tags=["sessoes"])
 
 
+async def _responder_turno(
+    session_id: str, apartamento: str, nova_mensagem: types.Content
+) -> RespostaConversa:
+    resposta = await executar_turno(
+        session_id=session_id, apartamento=apartamento, new_message=nova_mensagem
+    )
+    pendentes = await confirmacoes_pendentes(session_id, apartamento)
+    return RespostaConversa(resposta=resposta, confirmacoes_pendentes=pendentes)
+
+
 @router.post("", status_code=201, response_model=CriarSessaoResponse)
 async def criar_sessao(body: CriarSessaoRequest) -> CriarSessaoResponse:
     session_service = get_session_service()
@@ -58,11 +68,7 @@ async def enviar_mensagem(session_id: str, body: EnviarMensagemRequest) -> Respo
         raise HTTPException(status_code=404, detail="Sessao nao encontrada")
 
     nova_mensagem = types.Content(role="user", parts=[types.Part(text=body.texto)])
-    resposta = await executar_turno(
-        session_id=session_id, apartamento=apartamento, new_message=nova_mensagem
-    )
-    pendentes = await confirmacoes_pendentes(session_id, apartamento)
-    return RespostaConversa(resposta=resposta, confirmacoes_pendentes=pendentes)
+    return await _responder_turno(session_id, apartamento, nova_mensagem)
 
 
 @router.post("/{session_id}/confirmacoes", response_model=RespostaConversa)
@@ -91,8 +97,4 @@ async def responder_confirmacao(
             )
         ],
     )
-    resposta = await executar_turno(
-        session_id=session_id, apartamento=apartamento, new_message=nova_mensagem
-    )
-    pendentes_depois = await confirmacoes_pendentes(session_id, apartamento)
-    return RespostaConversa(resposta=resposta, confirmacoes_pendentes=pendentes_depois)
+    return await _responder_turno(session_id, apartamento, nova_mensagem)

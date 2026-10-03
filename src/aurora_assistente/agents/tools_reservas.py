@@ -8,9 +8,12 @@ from google.adk.tools import ToolContext
 
 from aurora_assistente.storage import database
 from aurora_assistente.storage.reservas import listar_reservas_ativas
-from aurora_assistente.storage.referencia import area_existe, data_valida, taxa_da_area
-
-_ERRO_DATA = "Data '{data}' invalida. Use o formato AAAA-MM-DD (ex.: 2030-04-20)."
+from aurora_assistente.storage.referencia import (
+    area_existe,
+    data_valida,
+    erro_data_invalida,
+    taxa_da_area,
+)
 
 
 def _gerar_codigo() -> str:
@@ -27,7 +30,7 @@ async def consultar_disponibilidade(area: str, data: str) -> dict:
     if not area_existe(area):
         return {"erro": f"Area '{area}' nao existe."}
     if not data_valida(data):
-        return {"erro": _ERRO_DATA.format(data=data)}
+        return erro_data_invalida(data)
     async with database.connect() as conn:
         cursor = await conn.execute(
             "SELECT 1 FROM reservas WHERE area = ? AND data = ? AND cancelada = 0",
@@ -52,7 +55,7 @@ async def criar_reserva(area: str, data: str, tool_context: ToolContext) -> dict
     if not area_existe(area):
         return {"erro": f"Area '{area}' nao existe."}
     if not data_valida(data):
-        return {"erro": _ERRO_DATA.format(data=data)}
+        return erro_data_invalida(data)
 
     for _ in range(5):
         codigo = _gerar_codigo()
@@ -81,7 +84,7 @@ async def cancelar_reserva(area: str, data: str, tool_context: ToolContext) -> d
     """
     apartamento = tool_context.state["apartamento"]
     if not data_valida(data):
-        return {"erro": _ERRO_DATA.format(data=data)}
+        return erro_data_invalida(data)
     async with database.connect() as conn:
         cursor = await conn.execute(
             "UPDATE reservas SET cancelada = 1"
